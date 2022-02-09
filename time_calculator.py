@@ -1,22 +1,21 @@
 Weekdays = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
 def add_time(start, duration, dayofWeek=""):
-  print("start\t\t\t\t",start,duration,dayofWeek)
+  # print("start\t\t\t\t",start,duration,dayofWeek)
   hours_over=0
   days = 0
   day_index = 0
+
   if dayofWeek!= "":
     day_index = Weekdays.index(dayofWeek.lower())
-    # print(day_index, "day_index")
   
   times = start.split(" ")[1]
   hours = int(start.split(":")[0])
   if times == "PM":
     hours += 12
-  # print("hours-transform\t\t",hours,":", times, days, "days")
   
   minutes = int(start[-5:-3]) + int(duration[-2:])
-  if minutes > 60:
+  if minutes >= 60:
     minutes -= 60
     hours_over = 1
 
@@ -25,44 +24,48 @@ def add_time(start, duration, dayofWeek=""):
   else: 
     minutes = str(minutes)
 
-  # print("minutes-transform\t",hours+hours_over,":", minutes, times, days, "days")
-
   hours_chg = int(duration.split(":")[0]) + hours_over
-  print("hours-added\t\t\t",hours+hours_chg,":", minutes, times, days, "days")
-
   hours = hours+hours_chg
+
+  # print("hours-added\t\t\t",hours,":", minutes, times, days, "days")
 
   while hours >= 24:
     days += 1
     hours -= 24
-    print("here")
-  if hours >= 13:
+    
+  if hours > 12:
     times = "PM"
     hours -= 12
+  elif hours == 12:
+    times = "PM"
+  elif hours == 0:
+    times = "AM"
+    hours = 12
   else:
     times = "AM"
   
-  if dayofWeek!= "":
-    days = (day_index + days)%7
-    day_name = Weekdays[days][0].upper()+Weekdays[days][1:]
-    if days == 0:
-      days = ", " + day_name
-    elif days == 1:
-      days = ", " + day_name + " (next day)"
-      # print("days", days, Weekdays[days])
-    else:
-      days = ", " + day_name + " (" + str(days) + " days later)"
-      # print("days", days)  
-  else:
-    if days == 0:
-      days = ""
-    elif days == 1:
-      days = " (next day)"
-      # print("days", days, Weekdays[days])
-    else:
-      days = " (" + str(days) + " days later)"
-      # print("days", days)
-  # print("days-transform\t\t",hours,":", minutes, times, days)
- 
+  days_str = ""
 
-  return str(hours) + ":" + minutes + " " + times + str(days)
+  if dayofWeek == "":
+    if days == 0:
+      days_str = ""
+      return str(hours) + ":" + minutes + " " + times + days_str
+    elif days == 1:
+      days_str = " (next day)"
+      return str(hours) + ":" + minutes + " " + times + days_str
+    else:
+      days_str = " (" + str(days) + " days later)"
+      return str(hours) + ":" + minutes + " " + times + days_str
+  else:
+    days_index = (day_index + days)%7
+    day_name = Weekdays[days_index][0].upper()+Weekdays[days_index][1:]
+
+    if days == 0:
+      days_str = ", " + day_name
+      return str(hours) + ":" + minutes + " " + times + days_str
+    elif days == 1:
+      days_str = ", " + day_name + " (next day)"
+      return str(hours) + ":" + minutes + " " + times + days_str
+    else:
+      days_str = ", " + day_name + " (" + str(days) + " days later)"
+      return str(hours) + ":" + minutes + " " + times + days_str
